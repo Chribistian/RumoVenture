@@ -49,44 +49,81 @@ public class GamePanel extends JPanel implements Runnable{
 		gameThread.start();
 	}
 	@Override
+//	public void run() {
+//		
+//		//Geschwindigkeit reduzieren 1sec in nanosec/FPS
+//		
+//		double drawInterval = 1000000000/FPS; //0.01666 seconds
+//		double nextDrawTime = System.nanoTime() + drawInterval;
+//
+//		while(gameThread != null) {
+//			
+//			
+//			// 1 UPDATE: update Information such as character Position
+//			update();
+//			
+//			// 2 DRAW: draw the screen with the updated information
+//			repaint();
+//			
+//			//loop should pause the remaining time
+//			try {
+//				double remainingTime = nextDrawTime - System.nanoTime();
+//				//sleep(s.u.) is in millisec
+//				remainingTime = remainingTime/1000000;
+//				
+//				//if more time is needed then expected
+//				if(remainingTime < 0) {
+//					remainingTime = 0;
+//				}
+//				
+//				Thread.sleep((long) remainingTime);
+//				
+//				nextDrawTime += drawInterval;
+//				
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+//		}
+//	}
+//	
 	public void run() {
 		
-		//Geschwindigkeit reduzieren 1sec in nanosec/FPS
+		double drawInterval = 1000000000/FPS;
+		double delta = 0;
+		long lastTime = System.nanoTime();
+		long currentTime;
+		long timer = 0;
+		int drawCount = 0;
 		
-		double drawInterval = 1000000000/FPS; //0.01666 seconds
-		double nextDrawTime = System.nanoTime() + drawInterval;
-
+		
+		
 		while(gameThread != null) {
 			
+			currentTime = System.nanoTime();
 			
-			// 1 UPDATE: update Information such as character Position
+			delta += (currentTime - lastTime) / drawInterval;
+			timer = timer + (currentTime - lastTime);
+			lastTime = currentTime;
+			
+			if(delta >= 1) {
 			update();
-			
-			// 2 DRAW: draw the screen with the updated information
 			repaint();
+			delta--;
+			drawCount++; // drawCount = drawCount + 1
+			}
 			
-			//loop should pause the remaining time
-			try {
-				double remainingTime = nextDrawTime - System.nanoTime();
-				//sleep(s.u.) is in millisec
-				remainingTime = remainingTime/1000000;
+			if (timer >= 1000000000) {
+				System.out.println("FPS:" + drawCount);
+				drawCount =0;
+				timer =0;
 				
-				//if more time is needed then expected
-				if(remainingTime < 0) {
-					remainingTime = 0;
-				}
-				
-				Thread.sleep((long) remainingTime);
-				
-				nextDrawTime += drawInterval;
-				
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			
 		}
 	}
+	
 	
 	public void update() {
 		
